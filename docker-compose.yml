@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/code/
+    links:
+      - php
+
+  php:
+    build:
+      context: .
+      dockerfile: php/Dockerfile
+    volumes:
+      - .:/code/
+      - "./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini"
+    depends_on:
+      - db
+
+  db:
+    build:
+      context: .
+      dockerfile: mysql/Dockerfile
+    command: ['--default-authentication-plugin=mysql_native_password']
+    environment:
+      MYSQL_ROOT_PASSWORD: secret_root_password
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: devuser
+      MYSQL_PASSWORD: devpass
+    ports:
+      - "9906:3306"
+
+
+  phpadmin:
+    build:
+      context: .
+      dockerfile: phpmyadmin/Dockerfile
+    depends_on:
+      - db
+      - php
+    ports:
+      - "9010:80"
+    environment:
+      PMA_HOST: "db"
+      PMA_PORT: "3306"
