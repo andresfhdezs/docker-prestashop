@@ -15,6 +15,19 @@ RUN apt-get update -y && \
     pecl install mcrypt-1.0.1 && \
     docker-php-ext-enable mcrypt
 
+# Php-zip
+RUN docker-php-ext-install zip
+
+# Configuration intl
+RUN apt-get install -y zlib1g-dev libicu-dev g++ \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install intl
+
+# Php accelerator
+RUN docker-php-ext-install opcache
+
+RUN pecl install xdebug
+
 # Copia el código de la aplicación
 COPY . /code
 
