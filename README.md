@@ -8,6 +8,8 @@
 _Ver la ip del contenedor_
 sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <CONTENEDOR_ID>
 
+* Ejecutar un comando en un contenedor en ejecución = sudo docker exec -i <CONTENEDOR_NAME_OR_ID> ls -l
+
 # Manejo de Imagen Docker
 
 * Crear una imagen                  = docker build --build-arg -t <NOMBRE_IMAGEN>

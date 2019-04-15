@@ -5,7 +5,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: nginx/Dockerfile
+      dockerfile: images/nginx/Dockerfile
     ports:
       - "8000:80"
     volumes:
@@ -16,31 +16,38 @@ services:
   php:
     build:
       context: .
-      dockerfile: php/Dockerfile
+      dockerfile: images/php/Dockerfile
     volumes:
       - .:/code/
-      - "./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini"
+      - "./images/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini"
     depends_on:
       - db
 
   db:
     build:
       context: .
-      dockerfile: mysql/Dockerfile
+      dockerfile: images/mysql/Dockerfile
     command: ['--default-authentication-plugin=mysql_native_password']
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: secret_root_password
-      MYSQL_DATABASE: test_db
+      MYSQL_DATABASE: prestashop
       MYSQL_USER: devuser
       MYSQL_PASSWORD: devpass
+    security_opt:
+      - seccomp:unconfined
+    
+  adminer:
+    image: adminer
+    restart: always
     ports:
-      - "9906:3306"
+      - 9906:3306    
 
 
   phpadmin:
     build:
       context: .
-      dockerfile: phpmyadmin/Dockerfile
+      dockerfile: images/phpmyadmin/Dockerfile
     depends_on:
       - db
       - php
