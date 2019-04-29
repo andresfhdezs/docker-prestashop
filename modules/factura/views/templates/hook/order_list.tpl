@@ -1,0 +1,1 @@
+<h1>Vista desde el Controlador</h1>

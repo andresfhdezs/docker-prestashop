@@ -14,6 +14,7 @@ class Factura extends Module
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_); 
         $this->bootstrap = true;
+        $this->controllers = array('view');
         
         parent::__construct();
         
@@ -52,7 +53,11 @@ class Factura extends Module
 
     public function install()
     {
-        if (!parent::install()) {
+        if (!parent::install()
+        || !Configuration::updateValue('FACTURA_REST_URL', 'http://190.196.5.70/api/BoletaElectronica/Save')
+        || !Configuration::updateValue('FACTURA_EMPRESA_ID', '1')
+        || !Configuration::updateValue('FACTURA_USUARIO_ID', 'demo')
+        || !Configuration::updateValue('FACTURA_CLAVE', 'demopass')) {
             return false;
         }
 
@@ -60,35 +65,106 @@ class Factura extends Module
             return true;
 
         // Install admin tab
-        if (!$this->installTab('AdminMyModFacturas', 'MyMod Facturas'))
-            return false;
+        $this->installTab('AdminFactura', 'Genera Factura');
     }
 
     public function uninstall()
     {
-        if (!parent::uninstall()) {
+        if (!parent::uninstall()
+        || !Configuration::deleteByName('FACTURA_REST_URL')
+        || !Configuration::deleteByName('FACTURA_EMPRESA_ID')
+        || !Configuration::deleteByName('FACTURA_USUARIO_ID')
+        || !Configuration::deleteByName('FACTURA_CLAVE')) {
             return false;
         }
 
         if (file_exists($this->to)) self::rrmdir($this->to);
             return true;
+
+        // Uninstall admin tab
+        if (!$this->uninstallTab())
+            return false;
+    }
+
+    public function processConfiguration()
+    {
+        if (Tools::isSubmit('submitfactura'))
+        {
+            $factura_rest_url = strval(Tools::getValue('FACTURA_REST_URL'));
+            $factura_empresa_id = strval(Tools::getValue('FACTURA_EMPRESA_ID'));
+            $factura_usuario_id = strval(Tools::getValue('FACTURA_USUARIO_ID'));
+            $factura_clave = strval(Tools::getValue('FACTURA_CLAVE'));
+
+            if (!$factura_rest_url || empty($factura_rest_url) || !Validate::isGenericName($factura_rest_url)
+                || !$factura_empresa_id || empty($factura_empresa_id) || !Validate::isGenericName($factura_empresa_id)
+                || !$factura_usuario_id || empty($factura_usuario_id) || !Validate::isGenericName($factura_usuario_id)
+                || !$factura_clave || empty($factura_clave) || !Validate::isGenericName($factura_clave)) 
+                $this->context->smarty->assign('confirmation', 'error');
+            else
+            {
+                Configuration::updateValue('FACTURA_REST_URL', $factura_rest_url);
+                Configuration::updateValue('FACTURA_EMPRESA_ID', $factura_empresa_id);
+                Configuration::updateValue('FACTURA_USUARIO_ID', $factura_usuario_id);
+                Configuration::updateValue('FACTURA_CLAVE', $factura_clave);
+                $this->context->smarty->assign('confirmation', 'ok');
+            }
+        }
+    }
+
+    public function assignConfiguration()
+    {
+        $factura_rest_url   = Configuration::get('FACTURA_REST_URL');
+        $factura_empresa_id = Configuration::get('FACTURA_EMPRESA_ID');
+        $factura_usuario_id = Configuration::get('FACTURA_USUARIO_ID');
+        $factura_clave      = Configuration::get('FACTURA_CLAVE');
+
+        $this->context->smarty->assign('factura_rest_url', $factura_rest_url);
+        $this->context->smarty->assign('factura_empresa_id', $factura_empresa_id);
+        $this->context->smarty->assign('factura_usuario_id', $factura_usuario_id);
+        $this->context->smarty->assign('factura_clave', $factura_clave);
     }
 
     public function getContent()
     {   
         $output = null; 
         $id_order = Tools::getValue('id_order');
-
+        $this->processConfiguration();
+        $this->assignConfiguration();
+        
         $order = new Order($id_order);
-        echo '<pre>',print_r($order),'</pre>';
-            die();
-        $this->context->smarty->assign(
-            array(
-                'factura_message' => $this->l('Este es un mensaje de prueba, para el panel de configuración'),
-                'order' => $order,
+        #echo '<pre>',print_r($order),'</pre>';
+            #die();
 
-            )
-        );
         return $this->display(__FILE__, 'factura.tpl');
+    }
+    
+    public function installTab($className, $tabName, $tabParentName = false)
+    {
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = $className;
+        $tab->name = array();
+        
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = $tabName;
+        }
+        if ($tabParentName) {
+            $tab->id_parent = (int) Tab::getIdFromClassName($tabParentName);
+        } else {
+            $tab->id_parent = 0;
+        }
+        $tab->module = $this->name;
+        return $tab->add();
+    }
+
+
+    public function uninstallTab()
+    {
+        // Retrieve Tab ID
+        $id_tab = (int)Tab::getIdFromClassName('AdminFactura');
+        // Load tab
+        $tab = new Tab((int)$id_tab);
+        // Delete it
+        return $tab->delete();
     }
 }
