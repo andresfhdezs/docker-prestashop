@@ -136,30 +136,34 @@ class MyModule extends Module
             return $helper->generateForm($fields_form);
         }
 
-    public function hookDisplayLeftColumn($params)
-        {
-            $this->context->smarty->assign(
-                array(
-                    'my_module_name' => Configuration::get('MYMODULE_NAME'),
-                    'my_module_link' => $this->context->link->getModuleLink('mymodule', 'display'),
-                    'my_module_message' => $this->l('This is a simple text message') // Do not forget to enclose your strings in the l() translation method
-                )
-            );
-             
-            return $this->display(__FILE__, 'mymodule.tpl');
-        }
            
-    public function hookDisplayRightColumn($params)
-        {
-          return $this->hookDisplayLeftColumn($params);
-        }
+    #public function hookDisplayRightColumn($params)
+    #    {
+    #      return $this->hookDisplayLeftColumn($params);
+    #    }
+    
 
-    public function hookNuevoHook($params) {
-        return $this->hookDisplayTop($params);
+    public function hookMyHook($params) {
+
+        $product = Tools::getValue('id_product');
+        $controller = Tools::getValue('id_stock_available');
+
+        $sql = 'SELECT quantity FROM `'._DB_PREFIX_.'stock_available` WHERE id_product = '.(int)$product.';';
+        $stock = Db::getInstance()->getValue($sql);
+
+        $this->context->smarty->assign(
+            array(
+                'my_module_message' => Configuration::get('MYMODULE_NAME'),
+                #'my_module_link' => $this->context->link->getModuleLink('mymodule', 'display'),
+                'stock_available' => $this->l($stock), // Do not forget to enclose your strings in the l() translation method
+            )
+        );
+         
+        return $this->display(__FILE__, 'mymodule.tpl');
     }
        
-    public function hookDisplayHeader()
-        {
-          $this->context->controller->addCSS($this->_path.'css/mymodule.css', 'all');
-        }
+    #public function hookDisplayHeader()
+    #    {
+    #      $this->context->controller->addCSS($this->_path.'css/mymodule.css', 'all');
+    #    }
 }

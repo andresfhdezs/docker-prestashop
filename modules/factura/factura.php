@@ -8,7 +8,7 @@ class Factura extends Module
     public function __construct()
     {
         $this->name = 'factura';
-        $this->tab = 'front_office_features';
+        $this->tab = 'billing_invoicing';
         $this->version = '0.0.1';
         $this->author = 'Xpectrum Technology';
         $this->need_instance = 0;
@@ -55,8 +55,13 @@ class Factura extends Module
         if (!parent::install()) {
             return false;
         }
+
         if (!file_exists($this->to)) self::copy_dir($this->from, $this->to);;
-        return true;
+            return true;
+
+        // Install admin tab
+        if (!$this->installTab('AdminMyModFacturas', 'MyMod Facturas'))
+            return false;
     }
 
     public function uninstall()
@@ -64,7 +69,26 @@ class Factura extends Module
         if (!parent::uninstall()) {
             return false;
         }
+
         if (file_exists($this->to)) self::rrmdir($this->to);
-        return true;
+            return true;
+    }
+
+    public function getContent()
+    {   
+        $output = null; 
+        $id_order = Tools::getValue('id_order');
+
+        $order = new Order($id_order);
+        echo '<pre>',print_r($order),'</pre>';
+            die();
+        $this->context->smarty->assign(
+            array(
+                'factura_message' => $this->l('Este es un mensaje de prueba, para el panel de configuración'),
+                'order' => $order,
+
+            )
+        );
+        return $this->display(__FILE__, 'factura.tpl');
     }
 }

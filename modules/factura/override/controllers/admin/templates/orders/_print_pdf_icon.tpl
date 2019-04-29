@@ -11,8 +11,10 @@
 			<i class="icon-truck"></i>
 		</a>
 	{/if}
-        <a class="btn btn-default _blank" href="{$link->getAdminLink('AdminPdf')|escape:'html':'UTF-8'}&amp;submitAction=generateDeliverySlipPDF&amp;id_order={$order->id}">
+	{if Configuration::get('PS_INVOICE') && $order->invoice_number}
+        <a class="btn btn-default _blank" href="{$link->getAdminLink('AdminModules')|escape:'html':'UTF-8'}&amp;configure=factura&amp;id_order={$order->id}">
 			<i class="icon-money"></i>
 		</a>
+	{/if}
 	</span>
 </span>

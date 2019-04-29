@@ -4,7 +4,7 @@
 	<displayName><![CDATA[My module]]></displayName>
 	<version><![CDATA[1.0.0]]></version>
 	<description><![CDATA[Description of my module.]]></description>
-	<author><![CDATA[Firstname Lastname]]></author>
+	<author><![CDATA[Andres Hdez]]></author>
 	<tab><![CDATA[front_office_features]]></tab>
 	<confirmUninstall><![CDATA[Are you sure you want to uninstall?]]></confirmUninstall>
 	<is_configurable>1</is_configurable>
