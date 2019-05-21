@@ -3,4 +3,5 @@
 
 [+] Limitar el botongenerado a solo cuando el pago esta aceptado
 [+] Obtener el objeto pasandole como parametro el id de la orden
-[-] Recontruir el Json
+[80%] Recontruir el Json
+    - "ItemDescuentoRecargo" WARNING['No_especifficado']

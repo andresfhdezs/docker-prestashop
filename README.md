@@ -5,7 +5,7 @@
 * Eliminar los contenedores         = sudo docker rm <CONTENEDOR_ID>
 * Eliminar todos los contenedores   = sudo docker rm `sudo docker ps -a -q`
 
-_Ver la ip del contenedor_
+_Ver el log del contenedor_
 * Ver el log de un contenedor = sudo docker logs -f --details <CONTENEDOR_ID>
 
 * Ver la ip de un contenedor =  sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <CONTENEDOR_ID>

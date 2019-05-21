@@ -12,7 +12,7 @@
 		</a>
 	{/if}
 	{if Configuration::get('PS_INVOICE') && $order->invoice_number}
-        <a class="btn btn-default _blank" href="{$link->getAdminLink('AdminFacturas')|escape:'html':'UTF-8'}&amp;id_order={$order->id}">
+        <a class="btn btn-default _blank" href="{$link->getAdminLink('AdminFacturaController')|escape:'html':'UTF-8'}&amp;submitAction=generateJson&amp;id_order={$order->id}">
 			<i class="icon-money"></i>
 		</a>
 	{/if}

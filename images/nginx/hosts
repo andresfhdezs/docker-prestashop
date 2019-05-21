@@ -1,0 +1,3 @@
+127.0.0.1 localhost # Este ya debe estar
+127.0.1.1 prestashop.local
+127.0.0.1 sprit.local
