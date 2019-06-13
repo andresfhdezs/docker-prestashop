@@ -1,7 +1,5 @@
 FROM dockette/jessie
 
-MAINTAINER Milan Sulc <sulcmil@gmail.com>
-
 # PHP
 ENV PHP_MODS_DIR=/etc/php/7.0/mods-available
 ENV PHP_CLI_DIR=/etc/php/7.0/cli
